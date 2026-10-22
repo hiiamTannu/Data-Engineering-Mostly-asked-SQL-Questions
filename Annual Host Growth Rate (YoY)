@@ -1,0 +1,33 @@
+Asked By - Airbnb
+
+Problem
+Measure annual growth in new Airbnb hosts. Return signup_year, new_hosts, prev_year_hosts, and growth_pct, calculated as the percentage change from the preceding available year; the first year has empty comparison values. Sort by year.
+
+Output columns: signup_year, new_hosts, prev_year_hosts, growth_pct
+
+
+--- write SQL Query here
+with yearly_host as 
+(
+    select 
+        extract(year from signup_date)::INT as signup_year,
+        count(*) as new_hosts
+    from hosts
+    group by extract(year from signup_year)
+),
+host_growth
+order by as 
+(
+    select 
+        signup_year,
+        new_hosts
+        lag(new_hosts, 1) over(order by signup_year asc) as prev_year_hosts
+        from yearly_host
+) 
+select 
+    signup_year;,
+    new_hosts,
+    prev_year_hosts,
+    round(100.0*(new_hosts - prev_year_hosts)/nullif(prev_year_hosts, 0), 2) as growth_pct
+    from host_growth
+    order by signup_year;
