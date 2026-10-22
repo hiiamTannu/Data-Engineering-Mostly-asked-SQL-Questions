@@ -1,0 +1,31 @@
+Problem
+A customer table has accumulated duplicate rows where the same email address was captured more than once.
+
+For each customer, return every original row plus a flag is_duplicate that marks whether the row is a stale copy.
+Within a set of rows sharing the same email, the single most recent row (by updated_at) is the one to keep and gets is_duplicate = 0; every older row for that email gets is_duplicate = 1.
+Rows with a missing email are always treated as unique and get is_duplicate = 0.
+Output columns: customer_id, email, name, phone, updated_at, is_duplicate
+
+Order the result by customer_id
+
+
+--- write SQL Query here
+with cte1 as(
+    select 
+        *,
+        row_number() over (partition by email order by updated_at desc, customer_id asc) as rn 
+        from customers
+)
+select 
+    customer_id,
+    email,
+    name,
+    phone,
+    updated_at,
+    (case when rn > 1 then 0 else 1 end) as is_duplicate
+from cte1 
+order by customer_id 
+
+
+
+
