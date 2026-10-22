@@ -1,0 +1,17 @@
+Asked By- Meta, Amazon
+
+Problem
+A game tracks points scored by players on successive days. For each gender, calculate total as the cumulative score through the current day, preserving the input order when multiple scores share a day. Return the gender, day, and cumulative total ordered by gender and day.
+
+Output columns: gender, day, total
+
+day identifies the relevant day.
+
+--- write SQL Query here
+select 
+    gender,
+    "day",
+    sum(score_point) over(partition by gender order by "day" asc
+    rows between unbounded preceding and current row)  as total
+    from scores
+order by gender, day;
