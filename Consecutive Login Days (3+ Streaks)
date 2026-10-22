@@ -1,0 +1,28 @@
+Problem asked by - Meta Amazon
+
+
+Problem
+Find every user login streak lasting at least three distinct consecutive calendar days. Return user_id, streak_start, streak_end, and streak_days; repeated logins on one date count as one day. Sort by user and streak start.
+
+Output columns: user_id, streak_start, streak_end, streak_days
+
+
+--- write SQL Query here
+with cte as 
+(
+    select 
+        user_id,
+        login_date,
+        login_date - row_number() over (partition by user_id order by login_date)::int as grp
+    from logins
+)
+
+select 
+    user_id,
+    min(login_date) as streak_start,
+    max(login_date) as streak_end,
+    count(*) as streak_days
+from cte 
+group by user_id, grp
+having count(*) >= 3;
+    
